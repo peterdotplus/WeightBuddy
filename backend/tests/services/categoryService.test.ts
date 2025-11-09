@@ -54,9 +54,9 @@ describe("Category Service", () => {
       const motivationPrompt = getCategoryPrompt("Motivation");
       const checkinPrompt = getCategoryPrompt("Check-in");
 
-      // Check that prompts are reasonably short (under 500 chars)
-      expect(motivationPrompt.length).toBeLessThan(500);
-      expect(checkinPrompt.length).toBeLessThan(500);
+      // Check that prompts are reasonably short (under 1100 chars)
+      expect(motivationPrompt.length).toBeLessThan(1100);
+      expect(checkinPrompt.length).toBeLessThan(1100);
     });
   });
 });

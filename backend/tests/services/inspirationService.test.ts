@@ -35,7 +35,7 @@ describe("Inspiration Service", () => {
       // Setup mocks
       mockedSelectRandomCategory.mockReturnValue("Motivation");
       mockedGetCategoryPrompt.mockReturnValue(
-        "Geef een inspirerende, persoonlijke motivatieboodschap voor iemand die bezig is met afvallen. Varieer in thema's zoals doorzettingsvermogen, kleine successen vieren, geduld hebben, en gezondheidsvoordelen. Maak het aanmoedigend en oprecht. Houd het onder 400 tekens en schrijf in het Nederlands.",
+        "Geef een inspirerende, persoonlijke motivatieboodschap voor iemand die bezig is met afvallen. Varieer in thema's zoals doorzettingsvermogen, kleine successen vieren, geduld hebben, en gezondheidsvoordelen. Maak het aanmoedigend en oprecht. Houd het onder 1000 tekens en schrijf in het Nederlands.",
       );
       mockedGenerateInspirationMessage.mockResolvedValue(
         "You are doing great! Keep going!",
@@ -52,7 +52,7 @@ describe("Inspiration Service", () => {
 
       // Verify AI message generation
       expect(mockedGenerateInspirationMessage).toHaveBeenCalledWith(
-        "Geef een inspirerende, persoonlijke motivatieboodschap voor iemand die bezig is met afvallen. Varieer in thema's zoals doorzettingsvermogen, kleine successen vieren, geduld hebben, en gezondheidsvoordelen. Maak het aanmoedigend en oprecht. Houd het onder 400 tekens en schrijf in het Nederlands.",
+        "Geef een inspirerende, persoonlijke motivatieboodschap voor iemand die bezig is met afvallen. Varieer in thema's zoals doorzettingsvermogen, kleine successen vieren, geduld hebben, en gezondheidsvoordelen. Maak het aanmoedigend en oprecht. Houd het onder 1000 tekens en schrijf in het Nederlands.",
       );
 
       // Verify Telegram message sending
@@ -65,7 +65,7 @@ describe("Inspiration Service", () => {
       // Setup mocks
       mockedSelectRandomCategory.mockReturnValue("Check-in");
       mockedGetCategoryPrompt.mockReturnValue(
-        "Stel een persoonlijke, aanmoedigende check-in vraag over de voortgang van het afvallen. Varieer in thema's zoals voeding, beweging, mentale gezondheid, uitdagingen, of kleine overwinningen. Maak het een open vraag die aanzet tot reflectie. Houd het onder 400 tekens en schrijf in het Nederlands.",
+        "Stel een persoonlijke, aanmoedigende check-in vraag over de voortgang van het afvallen. Varieer in thema's zoals voeding, beweging, mentale gezondheid, uitdagingen, of kleine overwinningen. Maak het een open vraag die aanzet tot reflectie. Houd het onder 1000 tekens en schrijf in het Nederlands.",
       );
       mockedGenerateInspirationMessage.mockResolvedValue(
         "How has your progress been this week?",
@@ -82,7 +82,7 @@ describe("Inspiration Service", () => {
 
       // Verify AI message generation
       expect(mockedGenerateInspirationMessage).toHaveBeenCalledWith(
-        "Stel een persoonlijke, aanmoedigende check-in vraag over de voortgang van het afvallen. Varieer in thema's zoals voeding, beweging, mentale gezondheid, uitdagingen, of kleine overwinningen. Maak het een open vraag die aanzet tot reflectie. Houd het onder 400 tekens en schrijf in het Nederlands.",
+        "Stel een persoonlijke, aanmoedigende check-in vraag over de voortgang van het afvallen. Varieer in thema's zoals voeding, beweging, mentale gezondheid, uitdagingen, of kleine overwinningen. Maak het een open vraag die aanzet tot reflectie. Houd het onder 1000 tekens en schrijf in het Nederlands.",
       );
 
       // Verify Telegram message sending
