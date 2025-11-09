@@ -54,7 +54,7 @@ describe("DeepSeek Service", () => {
               content: prompt,
             },
           ],
-          max_tokens: 100,
+          max_tokens: 300,
           temperature: 0.7,
         },
         {
@@ -100,7 +100,7 @@ describe("DeepSeek Service", () => {
               content: prompt,
             },
           ],
-          max_tokens: 100,
+          max_tokens: 300,
           temperature: 0.7,
         },
         {
