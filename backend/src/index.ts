@@ -1,12 +1,9 @@
 import express from "express";
-import dotenv from "dotenv";
+import { config } from "./config/config";
 import inspirationRoutes from "./routes/inspiration";
 
-// Load environment variables
-dotenv.config();
-
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = config.server.port;
 
 // Middleware
 app.use(express.json());
@@ -55,7 +52,7 @@ app.listen(PORT, () => {
   console.log(
     `💡 Inspiration endpoint: http://localhost:${PORT}/automation/send-inspiration`,
   );
-  console.log(`🌍 Environment: ${process.env.NODE_ENV || "development"}`);
+  console.log(`🌍 Environment: ${config.server.environment}`);
 });
 
 export default app;

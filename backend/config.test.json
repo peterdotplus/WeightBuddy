@@ -1,0 +1,14 @@
+{
+  "deepseek": {
+    "apiKey": "test-deepseek-api-key",
+    "apiUrl": "https://api.deepseek.com/v1/chat/completions"
+  },
+  "telegram": {
+    "botToken": "test-telegram-bot-token",
+    "chatId": "test-telegram-chat-id"
+  },
+  "server": {
+    "port": 3001,
+    "environment": "test"
+  }
+}

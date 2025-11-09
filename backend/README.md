@@ -56,15 +56,10 @@ backend/
 npm install
 ```
 
-### 2. Environment Configuration
+### 2. Configuration
 
-Copy the environment template and fill in your credentials:
-
-```bash
-cp .env.example .env
-```
-
-Edit `.env` with your actual values:
+**For Development (using .env file):**
+Create a `.env` file in the project root with your actual values:
 
 ```env
 # DeepSeek API Configuration
@@ -78,6 +73,30 @@ TELEGRAM_CHAT_ID=your_telegram_chat_id_here
 # Server Configuration
 PORT=3001
 NODE_ENV=development
+```
+
+**For Production/VPS (using config.json):**
+```bash
+cp config.example.json config.json
+```
+
+Edit `config.json` with your actual values:
+
+```json
+{
+  "deepseek": {
+    "apiKey": "your_deepseek_api_key_here",
+    "apiUrl": "https://api.deepseek.com/v1/chat/completions"
+  },
+  "telegram": {
+    "botToken": "your_telegram_bot_token_here",
+    "chatId": "your_telegram_chat_id_here"
+  },
+  "server": {
+    "port": 3001,
+    "environment": "production"
+  }
+}
 ```
 
 ### 3. Run the Application
@@ -188,16 +207,24 @@ npm run dev          # Start development server (no build needed)
 npm test             # Run tests anytime
 ```
 
-## Environment Variables
+## Configuration
 
-| Variable | Description | Required |
-|----------|-------------|----------|
-| `DEEPSEEK_API_KEY` | DeepSeek API authentication key | Yes |
-| `DEEPSEEK_API_URL` | DeepSeek API endpoint URL | No (has default) |
-| `TELEGRAM_BOT_TOKEN` | Telegram bot token | Yes |
-| `TELEGRAM_CHAT_ID` | Target chat ID for messages | Yes |
-| `PORT` | Server port | No (default: 3001) |
-| `NODE_ENV` | Environment mode | No (default: development) |
+The application supports multiple configuration methods (in order of priority):
+
+1. **Environment Variables** (highest priority)
+2. **config.json file** 
+3. **System defaults**
+
+### Configuration Options
+
+| Setting | Description | Required | Environment Variable | Config File Path |
+|---------|-------------|----------|---------------------|------------------|
+| DeepSeek API Key | DeepSeek API authentication key | Yes | `DEEPSEEK_API_KEY` | `deepseek.apiKey` |
+| DeepSeek API URL | DeepSeek API endpoint URL | No | `DEEPSEEK_API_URL` | `deepseek.apiUrl` |
+| Telegram Bot Token | Telegram bot token | Yes | `TELEGRAM_BOT_TOKEN` | `telegram.botToken` |
+| Telegram Chat ID | Target chat ID for messages | Yes | `TELEGRAM_CHAT_ID` | `telegram.chatId` |
+| Server Port | Server port | No | `PORT` | `server.port` |
+| Environment | Runtime environment | No | `NODE_ENV` | `server.environment` |
 
 ## Error Handling
 
