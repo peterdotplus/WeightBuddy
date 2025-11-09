@@ -9,9 +9,9 @@ export function selectRandomCategory(): Category {
 export function getCategoryPrompt(category: Category): string {
   switch (category) {
     case "Motivation":
-      return "Geef een korte, inspirerende motivatieboodschap voor iemand die bezig is met afvallen. Houd het onder 160 tekens en schrijf in het Nederlands.";
+      return "Geef een inspirerende, persoonlijke motivatieboodschap voor iemand die bezig is met afvallen. Varieer in thema's zoals doorzettingsvermogen, kleine successen vieren, geduld hebben, en gezondheidsvoordelen. Maak het aanmoedigend en oprecht. Houd het onder 400 tekens en schrijf in het Nederlands.";
     case "Check-in":
-      return "Stel een korte, aanmoedigende check-in vraag over de voortgang van het afvallen. Houd het onder 160 tekens en schrijf in het Nederlands.";
+      return "Stel een persoonlijke, aanmoedigende check-in vraag over de voortgang van het afvallen. Varieer in thema's zoals voeding, beweging, mentale gezondheid, uitdagingen, of kleine overwinningen. Maak het een open vraag die aanzet tot reflectie. Houd het onder 400 tekens en schrijf in het Nederlands.";
     default:
       throw new Error(`Invalid category: ${category}`);
   }
