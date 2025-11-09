@@ -25,7 +25,7 @@ describe("Inspiration Routes", () => {
     it("should send daily inspiration when called from localhost", async () => {
       const mockResult = {
         category: "Motivation",
-        message: "You are doing great! Keep pushing forward!",
+        message: "Je doet het geweldig! Blijf doorgaan!",
       };
       (sendDailyInspiration as jest.Mock).mockResolvedValue(mockResult);
 
@@ -94,7 +94,7 @@ describe("Inspiration Routes", () => {
     it("should work with IPv6 localhost address", async () => {
       const mockResult = {
         category: "Check-in",
-        message: "How has your progress been this week?",
+        message: "Hoe gaat het deze week met je voortgang?",
       };
       (sendDailyInspiration as jest.Mock).mockResolvedValue(mockResult);
 
@@ -115,7 +115,7 @@ describe("Inspiration Routes", () => {
     it("should work with localhost hostname", async () => {
       const mockResult = {
         category: "Motivation",
-        message: "Keep up the great work!",
+        message: "Blijf het goede werk doen!",
       };
       (sendDailyInspiration as jest.Mock).mockResolvedValue(mockResult);
 

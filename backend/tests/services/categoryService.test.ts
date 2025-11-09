@@ -1,14 +1,17 @@
-import { selectRandomCategory, getCategoryPrompt } from '../../src/services/categoryService';
+import {
+  selectRandomCategory,
+  getCategoryPrompt,
+} from "../../src/services/categoryService";
 
-describe('Category Service', () => {
-  describe('selectRandomCategory', () => {
+describe("Category Service", () => {
+  describe("selectRandomCategory", () => {
     it('should return either "Motivation" or "Check-in"', () => {
       const category = selectRandomCategory();
 
-      expect(['Motivation', 'Check-in']).toContain(category);
+      expect(["Motivation", "Check-in"]).toContain(category);
     });
 
-    it('should return both categories approximately equally over many calls', () => {
+    it("should return both categories approximately equally over many calls", () => {
       const categories = new Set();
 
       // Call the function multiple times
@@ -17,39 +20,39 @@ describe('Category Service', () => {
       }
 
       expect(categories.size).toBe(2);
-      expect(categories.has('Motivation')).toBe(true);
-      expect(categories.has('Check-in')).toBe(true);
+      expect(categories.has("Motivation")).toBe(true);
+      expect(categories.has("Check-in")).toBe(true);
     });
   });
 
-  describe('getCategoryPrompt', () => {
+  describe("getCategoryPrompt", () => {
     it('should return a motivation prompt when given "Motivation" category', () => {
-      const prompt = getCategoryPrompt('Motivation');
+      const prompt = getCategoryPrompt("Motivation");
 
       expect(prompt).toBeDefined();
-      expect(typeof prompt).toBe('string');
+      expect(typeof prompt).toBe("string");
       expect(prompt.length).toBeGreaterThan(0);
-      expect(prompt).toContain('motivation');
+      expect(prompt).toContain("motivatie");
     });
 
     it('should return a check-in prompt when given "Check-in" category', () => {
-      const prompt = getCategoryPrompt('Check-in');
+      const prompt = getCategoryPrompt("Check-in");
 
       expect(prompt).toBeDefined();
-      expect(typeof prompt).toBe('string');
+      expect(typeof prompt).toBe("string");
       expect(prompt.length).toBeGreaterThan(0);
-      expect(prompt).toContain('check-in');
+      expect(prompt).toContain("check-in");
     });
 
-    it('should throw an error for invalid category', () => {
+    it("should throw an error for invalid category", () => {
       expect(() => {
-        getCategoryPrompt('InvalidCategory' as any);
-      }).toThrow('Invalid category: InvalidCategory');
+        getCategoryPrompt("InvalidCategory" as any);
+      }).toThrow("Invalid category: InvalidCategory");
     });
 
-    it('should return prompts that are short enough for text messages', () => {
-      const motivationPrompt = getCategoryPrompt('Motivation');
-      const checkinPrompt = getCategoryPrompt('Check-in');
+    it("should return prompts that are short enough for text messages", () => {
+      const motivationPrompt = getCategoryPrompt("Motivation");
+      const checkinPrompt = getCategoryPrompt("Check-in");
 
       // Check that prompts are reasonably short (under 200 chars)
       expect(motivationPrompt.length).toBeLessThan(200);
