@@ -13,12 +13,14 @@ export function selectRandomCategory(): Category {
 
 export function getCategoryPrompt(category: Category): string {
   const basePrompt = getBasePrompt(category);
+  const responseConstraints =
+    "Keep your response under 1000 characters and write in Dutch without using a greeting.";
 
   switch (category) {
     case "Motivation":
-      return `${basePrompt} ${getRandomMotivationPrompt()} Keep your response under 1000 characters and write in Dutch without using a greeting.`;
+      return `${basePrompt} ${getRandomMotivationPrompt()} ${responseConstraints}`;
     case "Check-in":
-      return `${basePrompt} ${getRandomCheckInPrompt()} Keep your response under 1000 characters and write in Dutch without using a greeting.`;
+      return `${basePrompt} ${getRandomCheckInPrompt()} ${responseConstraints}`;
     default:
       throw new Error(`Invalid category: ${category}`);
   }
