@@ -1,25 +1,25 @@
-import express from 'express';
-import { telegramBot } from '../services/telegramBotService';
-import { config } from '../config/config';
+import express from "express";
+import { telegramBot } from "../services/telegramBotService";
+import { config } from "../config/config";
 
 const router = express.Router();
 
 // Webhook endpoint for receiving Telegram updates
-router.post('/webhook', express.json(), async (req, res) => {
+router.post("/webhook", express.json(), async (req, res) => {
   try {
     await telegramBot.handleUpdate(req.body);
     res.status(200).json({ success: true });
   } catch (error) {
-    console.error('Error handling Telegram webhook:', error);
+    console.error("Error handling Telegram webhook:", error);
     res.status(500).json({
       success: false,
-      error: 'Failed to process Telegram update'
+      error: "Failed to process Telegram update",
     });
   }
 });
 
 // Endpoint to set up webhook with Telegram
-router.post('/setup-webhook', async (req, res) => {
+router.post("/setup-webhook", async (req, res) => {
   try {
     const webhookUrl = `${config.server.webhookBaseUrl}/telegram/webhook`;
 
@@ -29,7 +29,7 @@ router.post('/setup-webhook', async (req, res) => {
 
     res.status(200).json({
       success: true,
-      message: 'Webhook set up successfully',
+      message: "Webhook set up successfully",
       webhookInfo: {
         url: webhookInfo.url,
         hasCustomCertificate: webhookInfo.has_custom_certificate,
@@ -37,38 +37,38 @@ router.post('/setup-webhook', async (req, res) => {
         lastErrorDate: webhookInfo.last_error_date,
         lastErrorMessage: webhookInfo.last_error_message,
         maxConnections: webhookInfo.max_connections,
-        allowedUpdates: webhookInfo.allowed_updates
-      }
+        allowedUpdates: webhookInfo.allowed_updates,
+      },
     });
   } catch (error) {
-    console.error('Error setting up webhook:', error);
+    console.error("Error setting up webhook:", error);
     res.status(500).json({
       success: false,
-      error: 'Failed to set up webhook'
+      error: "Failed to set up webhook",
     });
   }
 });
 
 // Endpoint to remove webhook
-router.post('/remove-webhook', async (req, res) => {
+router.post("/remove-webhook", async (req, res) => {
   try {
     await telegramBot.telegram.deleteWebhook();
 
     res.status(200).json({
       success: true,
-      message: 'Webhook removed successfully'
+      message: "Webhook removed successfully",
     });
   } catch (error) {
-    console.error('Error removing webhook:', error);
+    console.error("Error removing webhook:", error);
     res.status(500).json({
       success: false,
-      error: 'Failed to remove webhook'
+      error: "Failed to remove webhook",
     });
   }
 });
 
 // Endpoint to get webhook info
-router.get('/webhook-info', async (req, res) => {
+router.get("/webhook-info", async (req, res) => {
   try {
     const webhookInfo = await telegramBot.telegram.getWebhookInfo();
 
@@ -81,14 +81,47 @@ router.get('/webhook-info', async (req, res) => {
         lastErrorDate: webhookInfo.last_error_date,
         lastErrorMessage: webhookInfo.last_error_message,
         maxConnections: webhookInfo.max_connections,
-        allowedUpdates: webhookInfo.allowed_updates
-      }
+        allowedUpdates: webhookInfo.allowed_updates,
+      },
     });
   } catch (error) {
-    console.error('Error getting webhook info:', error);
+    console.error("Error getting webhook info:", error);
     res.status(500).json({
       success: false,
-      error: 'Failed to get webhook info'
+      error: "Failed to get webhook info",
+    });
+  }
+});
+
+// Debug endpoint to test bot functionality
+router.get("/debug", async (req, res) => {
+  try {
+    const botInfo = await telegramBot.telegram.getMe();
+
+    res.status(200).json({
+      success: true,
+      botInfo: {
+        id: botInfo.id,
+        firstName: botInfo.first_name,
+        username: botInfo.username,
+        canJoinGroups: botInfo.can_join_groups,
+        canReadAllGroupMessages: botInfo.can_read_all_group_messages,
+        supportsInlineQueries: botInfo.supports_inline_queries,
+      },
+      config: {
+        environment: config.server.environment,
+        botTokenConfigured: !!config.telegram.botToken,
+        botTokenLength: config.telegram.botToken?.length || 0,
+        chatIdConfigured: !!config.telegram.chatId,
+      },
+      message: "Send /test command to your bot to test the functionality",
+    });
+  } catch (error) {
+    console.error("Debug endpoint error:", error);
+    res.status(500).json({
+      success: false,
+      error: "Failed to get bot info",
+      details: error instanceof Error ? error.message : "Unknown error",
     });
   }
 });

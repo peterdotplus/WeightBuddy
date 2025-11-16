@@ -156,10 +156,17 @@ export const telegramBot = bot;
 
 export async function initializeTelegramBot(): Promise<void> {
   try {
-    // For development, you might want to use polling instead of webhook
-    if (config.server.environment === "development") {
-      console.log("🤖 Starting Telegram bot in development mode (polling)...");
+    console.log("🤖 Initializing Telegram bot...");
+    console.log(`🤖 Environment: ${config.server.environment}`);
+    console.log(
+      `🤖 Bot token configured: ${config.telegram.botToken ? "Yes" : "No"}`,
+    );
+
+    // For non-production environments, use polling instead of webhook
+    if (config.server.environment !== "production") {
+      console.log("🤖 Starting Telegram bot in polling mode...");
       await bot.launch();
+      console.log("✅ Telegram bot started successfully in polling mode");
     } else {
       console.log("🤖 Telegram bot ready for webhook setup...");
     }

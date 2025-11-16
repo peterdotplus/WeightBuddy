@@ -1,0 +1,15 @@
+{
+  "deepseek": {
+    "apiKey": "your_deepseek_api_key_here",
+    "apiUrl": "https://api.deepseek.com/v1/chat/completions"
+  },
+  "telegram": {
+    "botToken": "your_actual_telegram_bot_token_here",
+    "chatId": "your_telegram_chat_id_here"
+  },
+  "server": {
+    "port": 3001,
+    "environment": "development",
+    "webhookBaseUrl": "https://your-domain.com"
+  }
+}
