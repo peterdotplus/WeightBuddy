@@ -9,6 +9,7 @@
   },
   "server": {
     "port": 3001,
-    "environment": "production"
+    "environment": "production",
+    "webhookBaseUrl": "https://your-domain.com"
   }
 }

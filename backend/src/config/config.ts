@@ -13,6 +13,7 @@ export interface Config {
   server: {
     port: number;
     environment: string;
+    webhookBaseUrl?: string;
   };
 }
 
@@ -98,6 +99,8 @@ export function loadConfig(): Config {
       ),
       environment:
         process.env.NODE_ENV || fileConfig.server?.environment || "development",
+      webhookBaseUrl:
+        process.env.WEBHOOK_BASE_URL || fileConfig.server?.webhookBaseUrl,
     },
   };
 

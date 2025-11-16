@@ -1,6 +1,8 @@
 import express from "express";
 import { config } from "./config/config";
 import inspirationRoutes from "./routes/inspiration";
+import telegramRoutes from "./routes/telegram";
+import { initializeTelegramBot } from "./services/telegramBotService";
 
 const app = express();
 const PORT = config.server.port;
@@ -11,6 +13,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // Routes
 app.use("/automation", inspirationRoutes);
+app.use("/telegram", telegramRoutes);
 
 // Health check endpoint
 app.get("/health", (req, res) => {
@@ -46,7 +49,7 @@ app.use(
 );
 
 // Start server
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
   console.log(`🚀 ------------------------------------- 🚀`);
   const now = new Date();
   console.log(
@@ -56,7 +59,15 @@ app.listen(PORT, () => {
   console.log(
     `💡 Inspiration endpoint: http://localhost:${PORT}/automation/send-inspiration`,
   );
+  console.log(`🤖 Telegram webhook: http://localhost:${PORT}/telegram/webhook`);
   console.log(`🌍 Environment: ${config.server.environment}`);
+
+  // Initialize Telegram bot
+  try {
+    await initializeTelegramBot();
+  } catch (error) {
+    console.error("❌ Failed to initialize Telegram bot:", error);
+  }
 });
 
 export default app;
