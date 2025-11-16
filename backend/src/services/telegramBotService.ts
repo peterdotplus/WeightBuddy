@@ -65,6 +65,12 @@ bot.command("test", async (ctx) => {
             callback_data: "show_toast",
           },
         ],
+        [
+          {
+            text: "AlertButton",
+            callback_data: "show_alert",
+          },
+        ],
       ],
     },
   });
@@ -102,6 +108,12 @@ bot.action("toggle_three_state", async (ctx) => {
             callback_data: "show_toast",
           },
         ],
+        [
+          {
+            text: "AlertButton",
+            callback_data: "show_alert",
+          },
+        ],
       ],
     },
   });
@@ -135,13 +147,23 @@ bot.action("toggle_two_state", async (ctx) => {
             callback_data: "show_toast",
           },
         ],
+        [
+          {
+            text: "AlertButton",
+            callback_data: "show_alert",
+          },
+        ],
       ],
     },
   });
 });
 
 bot.action("show_toast", async (ctx) => {
-  await ctx.answerCbQuery("🍞 Toast notification displayed!", {
+  await ctx.answerCbQuery("🍞 Toast notification displayed!");
+});
+
+bot.action("show_alert", async (ctx) => {
+  await ctx.answerCbQuery("🚨 Alert notification displayed!", {
     show_alert: true,
   });
 });
