@@ -47,7 +47,11 @@ app.use(
 
 // Start server
 app.listen(PORT, () => {
-  console.log(`🚀 WeightBuddy server running on port ${PORT}`);
+  console.log(`🚀 ------------------------------------- 🚀`);
+  const now = new Date();
+  console.log(
+    `🚀 WeightBuddy server running on port ${PORT} since ${now.toLocaleString()}`,
+  );
   console.log(`📱 Health check: http://localhost:${PORT}/health`);
   console.log(
     `💡 Inspiration endpoint: http://localhost:${PORT}/automation/send-inspiration`,
