@@ -1,5 +1,10 @@
 export type Category = "Motivation" | "Check-in";
 
+import {
+  getRandomMotivationPrompt,
+  getRandomCheckInPrompt,
+} from "../prompts/categoryPrompts";
+
 export function selectRandomCategory(): Category {
   const categories: Category[] = ["Motivation", "Check-in"];
   const randomIndex = Math.floor(Math.random() * categories.length);
@@ -7,12 +12,25 @@ export function selectRandomCategory(): Category {
 }
 
 export function getCategoryPrompt(category: Category): string {
+  const basePrompt = getBasePrompt(category);
+
   switch (category) {
     case "Motivation":
-      return "Geef een inspirerende, persoonlijke motivatieboodschap voor iemand die bezig is met afvallen. Varieer in thema's zoals doorzettingsvermogen, kleine successen vieren, geduld hebben, en gezondheidsvoordelen. Maak het aanmoedigend en oprecht. Houd het onder 1000 tekens en schrijf in het Nederlands.";
+      return `${basePrompt} ${getRandomMotivationPrompt()} Keep your response under 1000 characters and write in Dutch without using a greeting.`;
     case "Check-in":
-      return "Stel een persoonlijke, aanmoedigende check-in vraag over de voortgang van het afvallen. Varieer in thema's zoals voeding, beweging, mentale gezondheid, uitdagingen, of kleine overwinningen. Maak het een open vraag die aanzet tot reflectie. Houd het onder 1000 tekens en schrijf in het Nederlands.";
+      return `${basePrompt} ${getRandomCheckInPrompt()} Keep your response under 1000 characters and write in Dutch without using a greeting.`;
     default:
       throw new Error(`Invalid category: ${category}`);
+  }
+}
+
+function getBasePrompt(category: Category): string {
+  switch (category) {
+    case "Motivation":
+      return "You are a supportive weight loss coach. Write a personal, encouraging message that:";
+    case "Check-in":
+      return "You are a caring weight loss coach. Write a warm, supportive check-in message that:";
+    default:
+      return "You are a supportive weight loss coach. Write a message that:";
   }
 }
