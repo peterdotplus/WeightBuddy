@@ -3,6 +3,7 @@ import {
   addUserMessage,
   addAssistantMessage,
   getUserConversationHistory,
+  getConversationSummary,
   formatConversationHistoryForPrompt,
 } from "./conversationMemoryService";
 
@@ -40,11 +41,17 @@ export async function handleChatMessage(
   // Add user message to conversation history
   addUserMessage(userId, trimmedMessage);
 
-  // Get conversation history and format for prompt
+  // Get conversation history and summary
   const conversationHistory = getUserConversationHistory(userId);
-  const historyText = formatConversationHistoryForPrompt(conversationHistory);
+  const conversationSummary = getConversationSummary(userId);
 
-  // Create a prompt for the AI that includes conversation history and user's message
+  // Format conversation context for prompt
+  const historyText = formatConversationHistoryForPrompt(
+    conversationHistory,
+    conversationSummary,
+  );
+
+  // Create a prompt for the AI that includes conversation summary, history and user's message
   const prompt = `${CHAT_PROMPT_BASE}${historyText}${CHAT_PROMPT_MIDDLE}${trimmedMessage}${CHAT_PROMPT_SUFFIX}`;
 
   // Generate AI response

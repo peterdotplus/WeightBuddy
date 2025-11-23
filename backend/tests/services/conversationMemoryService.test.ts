@@ -4,6 +4,9 @@ import {
   getUserConversationHistory,
   clearUserConversation,
   initializeConversationMemory,
+  getConversationSummary,
+  setConversationSummary,
+  formatConversationHistoryForPrompt,
 } from "../../src/services/conversationMemoryService";
 import fs from "fs";
 import path from "path";
@@ -81,7 +84,7 @@ describe("Conversation Memory Service", () => {
           mockedFs.writeFileSync.mock.calls.length - 1
         ]!;
       const savedData = JSON.parse(lastCall[1] as string);
-      const userMessages = savedData[TEST_USER_ID];
+      const userMessages = savedData[TEST_USER_ID].messages;
 
       expect(userMessages).toHaveLength(30);
       expect(userMessages[0].content).toBe("Message 2"); // First message should be Message 2 (Message 1 was removed)
@@ -98,7 +101,7 @@ describe("Conversation Memory Service", () => {
           mockedFs.writeFileSync.mock.calls.length - 1
         ]!;
       const savedData = JSON.parse(lastCall[1] as string);
-      const userMessage = savedData[TEST_USER_ID][0];
+      const userMessage = savedData[TEST_USER_ID].messages[0];
 
       expect(userMessage.role).toBe("user");
       expect(userMessage.content).toBe(message);
@@ -118,7 +121,7 @@ describe("Conversation Memory Service", () => {
           mockedFs.writeFileSync.mock.calls.length - 1
         ]!;
       const savedData = JSON.parse(lastCall[1] as string);
-      const assistantMessage = savedData[TEST_USER_ID][0];
+      const assistantMessage = savedData[TEST_USER_ID].messages[0];
 
       expect(assistantMessage.role).toBe("assistant");
       expect(assistantMessage.content).toBe(message);
@@ -134,7 +137,7 @@ describe("Conversation Memory Service", () => {
           mockedFs.writeFileSync.mock.calls.length - 1
         ]!;
       const savedData = JSON.parse(lastCall[1] as string);
-      const messages = savedData[TEST_USER_ID];
+      const messages = savedData[TEST_USER_ID].messages;
 
       expect(messages).toHaveLength(3);
       expect(messages[0].role).toBe("user");
@@ -154,18 +157,22 @@ describe("Conversation Memory Service", () => {
 
     it("should return user conversation history", () => {
       const mockData = {
-        [TEST_USER_ID]: [
-          {
-            role: "user",
-            content: "Message 1",
-            timestamp: new Date().toISOString(),
-          },
-          {
-            role: "assistant",
-            content: "Response 1",
-            timestamp: new Date().toISOString(),
-          },
-        ],
+        [TEST_USER_ID]: {
+          messages: [
+            {
+              role: "user",
+              content: "Message 1",
+              timestamp: new Date().toISOString(),
+            },
+            {
+              role: "assistant",
+              content: "Response 1",
+              timestamp: new Date().toISOString(),
+            },
+          ],
+          summary: "User has been discussing weight loss goals",
+          lastSummaryUpdate: new Date().toISOString(),
+        },
       };
       mockedFs.readFileSync.mockReturnValue(JSON.stringify(mockData));
 
@@ -189,26 +196,34 @@ describe("Conversation Memory Service", () => {
   describe("clearUserConversation", () => {
     it("should clear user conversation history", () => {
       const mockData = {
-        [TEST_USER_ID]: [
-          {
-            role: "user",
-            content: "Message 1",
-            timestamp: new Date().toISOString(),
-          },
-          {
-            role: "assistant",
-            content: "Response 1",
-            timestamp: new Date().toISOString(),
-          },
-        ],
-        999: [
+        [TEST_USER_ID]: {
+          messages: [
+            {
+              role: "user",
+              content: "Message 1",
+              timestamp: new Date().toISOString(),
+            },
+            {
+              role: "assistant",
+              content: "Response 1",
+              timestamp: new Date().toISOString(),
+            },
+          ],
+          summary: "User has been discussing weight loss goals",
+          lastSummaryUpdate: new Date().toISOString(),
+        },
+        999: {
           // Another user's data
-          {
-            role: "user",
-            content: "Other message",
-            timestamp: new Date().toISOString(),
-          },
-        ],
+          messages: [
+            {
+              role: "user",
+              content: "Other message",
+              timestamp: new Date().toISOString(),
+            },
+          ],
+          summary: "Other user conversation",
+          lastSummaryUpdate: new Date().toISOString(),
+        },
       };
       mockedFs.readFileSync.mockReturnValue(JSON.stringify(mockData));
 
@@ -236,23 +251,27 @@ describe("Conversation Memory Service", () => {
   describe("conversation history formatting", () => {
     it("should format conversation history for prompt correctly", () => {
       const mockData = {
-        [TEST_USER_ID]: [
-          {
-            role: "user",
-            content: "Hoe kan ik gemotiveerd blijven?",
-            timestamp: new Date().toISOString(),
-          },
-          {
-            role: "assistant",
-            content: "Focus op kleine doelen en vier je successen!",
-            timestamp: new Date().toISOString(),
-          },
-          {
-            role: "user",
-            content: "Ik heb moeite met consistent blijven",
-            timestamp: new Date().toISOString(),
-          },
-        ],
+        [TEST_USER_ID]: {
+          messages: [
+            {
+              role: "user",
+              content: "Hoe kan ik gemotiveerd blijven?",
+              timestamp: new Date().toISOString(),
+            },
+            {
+              role: "assistant",
+              content: "Focus op kleine doelen en vier je successen!",
+              timestamp: new Date().toISOString(),
+            },
+            {
+              role: "user",
+              content: "Ik heb moeite met consistent blijven",
+              timestamp: new Date().toISOString(),
+            },
+          ],
+          summary: "User discussing motivation and consistency in weight loss",
+          lastSummaryUpdate: new Date().toISOString(),
+        },
       };
       mockedFs.readFileSync.mockReturnValue(JSON.stringify(mockData));
 
@@ -264,6 +283,10 @@ describe("Conversation Memory Service", () => {
         .join("\n");
 
       expect(formattedHistory).toContain(
+        "Conversation Summary: User discussing motivation and consistency in weight loss",
+      );
+
+      expect(formattedHistory).toContain(
         "User: Hoe kan ik gemotiveerd blijven?",
       );
       expect(formattedHistory).toContain(
@@ -272,6 +295,99 @@ describe("Conversation Memory Service", () => {
       expect(formattedHistory).toContain(
         "User: Ik heb moeite met consistent blijven",
       );
+    });
+
+    describe("Conversation Summary", () => {
+      it("should get conversation summary for user", () => {
+        const mockData = {
+          [TEST_USER_ID]: {
+            messages: [],
+            summary: "User lost 5 kg and is focusing on exercise",
+            lastSummaryUpdate: new Date().toISOString(),
+          },
+        };
+        mockedFs.readFileSync.mockReturnValue(JSON.stringify(mockData));
+
+        const summary = getConversationSummary(TEST_USER_ID);
+
+        expect(summary).toBe("User lost 5 kg and is focusing on exercise");
+      });
+
+      it("should return default summary for user with no history", () => {
+        mockedFs.readFileSync.mockReturnValue("{}");
+
+        const summary = getConversationSummary(TEST_USER_ID);
+
+        expect(summary).toBe("No conversation history yet.");
+      });
+
+      it("should set conversation summary for user", () => {
+        const summaryText =
+          "User achieved goal of losing 5 kg and is now maintaining";
+
+        setConversationSummary(TEST_USER_ID, summaryText);
+
+        const lastCall =
+          mockedFs.writeFileSync.mock.calls[
+            mockedFs.writeFileSync.mock.calls.length - 1
+          ]!;
+        const savedData = JSON.parse(lastCall[1] as string);
+        const userData = savedData[TEST_USER_ID];
+
+        expect(userData.summary).toBe(summaryText);
+        expect(userData.lastSummaryUpdate).toBeDefined();
+      });
+
+      it("should format conversation history with summary correctly", () => {
+        const history = [
+          {
+            role: "user" as const,
+            content: "I lost 5 kg this month!",
+            timestamp: new Date().toISOString(),
+          },
+          {
+            role: "assistant" as const,
+            content: "That's amazing progress! Keep up the great work!",
+            timestamp: new Date().toISOString(),
+          },
+        ];
+
+        const summary = "User lost 5 kg and is very motivated";
+        const formatted = formatConversationHistoryForPrompt(history, summary);
+
+        expect(formatted).toContain(
+          "Conversation Summary: User lost 5 kg and is very motivated",
+        );
+        expect(formatted).toContain("User: I lost 5 kg this month!");
+        expect(formatted).toContain("Coach: That's amazing progress!");
+      });
+
+      it("should format conversation history without summary correctly", () => {
+        const history = [
+          {
+            role: "user" as const,
+            content: "How can I stay motivated?",
+            timestamp: new Date().toISOString(),
+          },
+        ];
+
+        const formatted = formatConversationHistoryForPrompt(
+          history,
+          "No conversation history yet.",
+        );
+
+        expect(formatted).not.toContain("Conversation Summary");
+        expect(formatted).toContain("User: How can I stay motivated?");
+      });
+
+      it("should handle empty history correctly", () => {
+        const formatted = formatConversationHistoryForPrompt(
+          [],
+          "No conversation history yet.",
+        );
+
+        expect(formatted).toBe("");
+      });
     });
   });
 });
