@@ -28,7 +28,7 @@ describe("Chat End-to-End", () => {
       expect(isSlashCommand(userMessage)).toBe(false);
 
       // Test chat message handling
-      const result = await handleChatMessage(userMessage);
+      const result = await handleChatMessage(123456789, userMessage);
 
       expect(result).toBe(aiResponse);
       expect(mockGenerateMessage).toHaveBeenCalledWith(
@@ -55,7 +55,7 @@ describe("Chat End-to-End", () => {
       mockGenerateMessage.mockResolvedValue("AI response");
 
       for (const testCase of testCases) {
-        const result = await handleChatMessage(testCase.message);
+        const result = await handleChatMessage(123456789, testCase.message);
 
         if (testCase.shouldCallAI) {
           expect(mockGenerateMessage).toHaveBeenCalled();
@@ -79,7 +79,7 @@ describe("Chat End-to-End", () => {
       mockGenerateMessage.mockResolvedValue("Test response");
 
       for (const userMessage of userMessages) {
-        await handleChatMessage(userMessage);
+        await handleChatMessage(123456789, userMessage);
 
         const calledPrompt = mockGenerateMessage.mock.calls[0]![0];
 
@@ -101,7 +101,9 @@ describe("Chat End-to-End", () => {
       const errorMessage = "AI service unavailable";
       mockGenerateMessage.mockRejectedValue(new Error(errorMessage));
 
-      await expect(handleChatMessage("Hallo")).rejects.toThrow(errorMessage);
+      await expect(handleChatMessage(123456789, "Hallo")).rejects.toThrow(
+        errorMessage,
+      );
     });
   });
 });

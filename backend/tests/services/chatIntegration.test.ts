@@ -23,7 +23,7 @@ describe("Chat Integration", () => {
 
       mockGenerateMessage.mockResolvedValue(aiResponse);
 
-      const result = await handleChatMessage(userMessage);
+      const result = await handleChatMessage(123456789, userMessage);
 
       expect(result).toBe(aiResponse);
       expect(mockGenerateMessage).toHaveBeenCalledWith(
@@ -38,14 +38,14 @@ describe("Chat Integration", () => {
     });
 
     it("should ignore slash commands", async () => {
-      const result = await handleChatMessage("/start");
+      const result = await handleChatMessage(123456789, "/start");
 
       expect(result).toBeNull();
       expect(mockGenerateMessage).not.toHaveBeenCalled();
     });
 
     it("should handle empty messages", async () => {
-      const result = await handleChatMessage("");
+      const result = await handleChatMessage(123456789, "");
 
       expect(result).toBeNull();
       expect(mockGenerateMessage).not.toHaveBeenCalled();
@@ -55,14 +55,16 @@ describe("Chat Integration", () => {
       const errorMessage = "AI service unavailable";
       mockGenerateMessage.mockRejectedValue(new Error(errorMessage));
 
-      await expect(handleChatMessage("Hallo")).rejects.toThrow(errorMessage);
+      await expect(handleChatMessage(123456789, "Hallo")).rejects.toThrow(
+        errorMessage,
+      );
     });
 
     it("should maintain consistent prompt structure", async () => {
       const userMessage = "Ik heb moeite met consistent blijven";
       mockGenerateMessage.mockResolvedValue("Test response");
 
-      await handleChatMessage(userMessage);
+      await handleChatMessage(123456789, userMessage);
 
       const calledPrompt = mockGenerateMessage.mock.calls[0]![0];
 
@@ -86,7 +88,7 @@ describe("Chat Integration", () => {
       mockGenerateMessage.mockResolvedValue("AI response");
 
       for (const testCase of testCases) {
-        await handleChatMessage(testCase.message);
+        await handleChatMessage(123456789, testCase.message);
 
         if (testCase.shouldCallAI) {
           expect(mockGenerateMessage).toHaveBeenCalled();

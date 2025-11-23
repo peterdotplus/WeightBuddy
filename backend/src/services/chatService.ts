@@ -1,9 +1,15 @@
 import { generateMessage } from "./deepseekService";
+import {
+  addUserMessage,
+  addAssistantMessage,
+  getUserConversationHistory,
+  formatConversationHistoryForPrompt,
+} from "./conversationMemoryService";
 
-const CHAT_PROMPT_BASE =
-  'You are a supportive weight loss coach. A user has sent you this message: "';
+const CHAT_PROMPT_BASE = "You are a supportive weight loss coach.\n\n";
+const CHAT_PROMPT_MIDDLE = 'Current user message: "';
 const CHAT_PROMPT_SUFFIX =
-  '".\nPlease respond helpfully and supportively to their message.\nKeep your response under 600 characters and write in Dutch without using a greeting.';
+  '"\n\nPlease respond helpfully and supportively to their message, considering any previous conversation.\nKeep your response under 600 characters and write in Dutch without using a greeting.';
 
 /**
  * Determines if a message is a slash command
@@ -21,6 +27,7 @@ export function isSlashCommand(message: string): boolean {
  * @throws Error if AI service fails
  */
 export async function handleChatMessage(
+  userId: number,
   message: string,
 ): Promise<string | null> {
   const trimmedMessage = message.trim();
@@ -30,11 +37,21 @@ export async function handleChatMessage(
     return null;
   }
 
-  // Create a prompt for the AI that includes the user's message
-  const prompt = `${CHAT_PROMPT_BASE}${trimmedMessage}${CHAT_PROMPT_SUFFIX}`;
+  // Add user message to conversation history
+  addUserMessage(userId, trimmedMessage);
+
+  // Get conversation history and format for prompt
+  const conversationHistory = getUserConversationHistory(userId);
+  const historyText = formatConversationHistoryForPrompt(conversationHistory);
+
+  // Create a prompt for the AI that includes conversation history and user's message
+  const prompt = `${CHAT_PROMPT_BASE}${historyText}${CHAT_PROMPT_MIDDLE}${trimmedMessage}${CHAT_PROMPT_SUFFIX}`;
 
   // Generate AI response
   const aiResponse = await generateMessage(prompt);
+
+  // Add assistant response to conversation history
+  addAssistantMessage(userId, aiResponse);
 
   return aiResponse;
 }

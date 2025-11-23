@@ -41,7 +41,7 @@ describe("Chat Service", () => {
 
   describe("handleChatMessage", () => {
     it("should return null for slash commands", async () => {
-      const result = await handleChatMessage("/start");
+      const result = await handleChatMessage(123456789, "/start");
       expect(result).toBeNull();
       expect(mockGenerateMessage).not.toHaveBeenCalled();
     });
@@ -51,7 +51,10 @@ describe("Chat Service", () => {
         "Dit is een AI antwoord op je vraag over gewichtsverlies.";
       mockGenerateMessage.mockResolvedValue(mockResponse);
 
-      const result = await handleChatMessage("Hoe kan ik gemotiveerd blijven?");
+      const result = await handleChatMessage(
+        123456789,
+        "Hoe kan ik gemotiveerd blijven?",
+      );
 
       expect(mockGenerateMessage).toHaveBeenCalledWith(
         expect.stringContaining("Hoe kan ik gemotiveerd blijven?"),
@@ -64,7 +67,7 @@ describe("Chat Service", () => {
       mockGenerateMessage.mockResolvedValue(mockResponse);
 
       const userMessage = "Ik heb moeite met consistent blijven";
-      await handleChatMessage(userMessage);
+      await handleChatMessage(123456789, userMessage);
 
       expect(mockGenerateMessage).toHaveBeenCalledWith(
         expect.stringContaining("You are a supportive weight loss coach"),
@@ -81,13 +84,13 @@ describe("Chat Service", () => {
     });
 
     it("should handle empty messages", async () => {
-      const result = await handleChatMessage("");
+      const result = await handleChatMessage(123456789, "");
       expect(result).toBeNull();
       expect(mockGenerateMessage).not.toHaveBeenCalled();
     });
 
     it("should handle whitespace-only messages", async () => {
-      const result = await handleChatMessage("   ");
+      const result = await handleChatMessage(123456789, "   ");
       expect(result).toBeNull();
       expect(mockGenerateMessage).not.toHaveBeenCalled();
     });
@@ -96,14 +99,16 @@ describe("Chat Service", () => {
       const errorMessage = "AI service unavailable";
       mockGenerateMessage.mockRejectedValue(new Error(errorMessage));
 
-      await expect(handleChatMessage("Hallo")).rejects.toThrow(errorMessage);
+      await expect(handleChatMessage(123456789, "Hallo")).rejects.toThrow(
+        errorMessage,
+      );
     });
 
     it("should ensure response length constraints are passed to AI", async () => {
       const mockResponse = "Kort antwoord";
       mockGenerateMessage.mockResolvedValue(mockResponse);
 
-      await handleChatMessage("Test bericht");
+      await handleChatMessage(123456789, "Test bericht");
 
       expect(mockGenerateMessage).toHaveBeenCalledWith(
         expect.stringContaining("Keep your response under 600 characters"),
@@ -114,7 +119,7 @@ describe("Chat Service", () => {
       const mockResponse = "Nederlands antwoord";
       mockGenerateMessage.mockResolvedValue(mockResponse);
 
-      await handleChatMessage("Test bericht");
+      await handleChatMessage(123456789, "Test bericht");
 
       expect(mockGenerateMessage).toHaveBeenCalledWith(
         expect.stringContaining("write in Dutch"),

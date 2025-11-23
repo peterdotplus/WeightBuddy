@@ -181,7 +181,7 @@ bot.on("text", async (ctx) => {
 
   try {
     // Handle the chat message using our chat service
-    const response = await handleChatMessage(message);
+    const response = await handleChatMessage(userId, message);
 
     // If response is null, it means it was a slash command or empty message
     // In that case, let the command handlers handle it

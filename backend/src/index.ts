@@ -3,6 +3,7 @@ import { config } from "./config/config";
 import inspirationRoutes from "./routes/inspiration";
 import telegramRoutes from "./routes/telegram";
 import { initializeTelegramBot } from "./services/telegramBotService";
+import { initializeConversationMemory } from "./services/conversationMemoryService";
 
 const app = express();
 const PORT = config.server.port;
@@ -61,6 +62,13 @@ app.listen(PORT, async () => {
   );
   console.log(`🤖 Telegram webhook: http://localhost:${PORT}/telegram/webhook`);
   console.log(`🌍 Environment: ${config.server.environment}`);
+
+  // Initialize conversation memory
+  try {
+    initializeConversationMemory();
+  } catch (error) {
+    console.error("❌ Failed to initialize conversation memory:", error);
+  }
 
   // Initialize Telegram bot
   try {
