@@ -1,4 +1,4 @@
-import { generateInspirationMessage } from "../../src/services/deepseekService";
+import { generateMessage } from "../../src/services/deepseekService";
 
 // Mock axios
 jest.mock("axios", () => ({
@@ -23,7 +23,7 @@ describe("DeepSeek Service", () => {
     jest.clearAllMocks();
   });
 
-  describe("generateInspirationMessage", () => {
+  describe("generateMessage", () => {
     it("should call DeepSeek API with correct parameters for motivation prompt", async () => {
       // Mock successful API response
       const mockResponse = {
@@ -42,7 +42,7 @@ describe("DeepSeek Service", () => {
 
       const prompt =
         "Provide a short, inspiring motivation message for someone on a weight loss journey. Keep it under 160 characters.";
-      const result = await generateInspirationMessage(prompt);
+      const result = await generateMessage(prompt);
 
       expect(axios.post).toHaveBeenCalledWith(
         "https://api.deepseek.com/v1/chat/completions",
@@ -88,7 +88,7 @@ describe("DeepSeek Service", () => {
 
       const prompt =
         "Ask a brief, encouraging check-in question about weight loss progress. Keep it under 160 characters.";
-      const result = await generateInspirationMessage(prompt);
+      const result = await generateMessage(prompt);
 
       expect(axios.post).toHaveBeenCalledWith(
         "https://api.deepseek.com/v1/chat/completions",
@@ -125,8 +125,8 @@ describe("DeepSeek Service", () => {
     it("should throw an error if API call fails", async () => {
       (axios.post as jest.Mock).mockRejectedValue(new Error("API Error"));
 
-      await expect(generateInspirationMessage("test prompt")).rejects.toThrow(
-        "Failed to generate inspiration message: API Error",
+      await expect(generateMessage("test prompt")).rejects.toThrow(
+        "Failed to generate message: API Error",
       );
     });
 
@@ -138,7 +138,7 @@ describe("DeepSeek Service", () => {
       };
       (axios.post as jest.Mock).mockResolvedValue(mockResponse);
 
-      await expect(generateInspirationMessage("test prompt")).rejects.toThrow(
+      await expect(generateMessage("test prompt")).rejects.toThrow(
         "Invalid response from DeepSeek API: No choices returned",
       );
     });
@@ -155,7 +155,7 @@ describe("DeepSeek Service", () => {
       };
       (axios.post as jest.Mock).mockResolvedValue(mockResponse);
 
-      await expect(generateInspirationMessage("test prompt")).rejects.toThrow(
+      await expect(generateMessage("test prompt")).rejects.toThrow(
         "Invalid response from DeepSeek API: No content in response",
       );
     });

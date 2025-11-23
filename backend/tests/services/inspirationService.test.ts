@@ -3,7 +3,7 @@ import {
   selectRandomCategory,
   getCategoryPrompt,
 } from "../../src/services/categoryService";
-import { generateInspirationMessage } from "../../src/services/deepseekService";
+import { generateMessage } from "../../src/services/deepseekService";
 import { sendTelegramMessage } from "../../src/services/telegramService";
 
 // Mock dependencies
@@ -17,10 +17,9 @@ const mockedSelectRandomCategory = selectRandomCategory as jest.MockedFunction<
 const mockedGetCategoryPrompt = getCategoryPrompt as jest.MockedFunction<
   typeof getCategoryPrompt
 >;
-const mockedGenerateInspirationMessage =
-  generateInspirationMessage as jest.MockedFunction<
-    typeof generateInspirationMessage
-  >;
+const mockedGenerateMessage = generateMessage as jest.MockedFunction<
+  typeof generateMessage
+>;
 const mockedSendTelegramMessage = sendTelegramMessage as jest.MockedFunction<
   typeof sendTelegramMessage
 >;
@@ -37,7 +36,7 @@ describe("Inspiration Service", () => {
       mockedGetCategoryPrompt.mockReturnValue(
         "Geef een inspirerende, persoonlijke motivatieboodschap voor iemand die bezig is met afvallen. Varieer in thema's zoals doorzettingsvermogen, kleine successen vieren, geduld hebben, en gezondheidsvoordelen. Maak het aanmoedigend en oprecht. Houd het onder 1000 tekens en schrijf in het Nederlands.",
       );
-      mockedGenerateInspirationMessage.mockResolvedValue(
+      mockedGenerateMessage.mockResolvedValue(
         "You are doing great! Keep going!",
       );
       mockedSendTelegramMessage.mockResolvedValue();
@@ -51,7 +50,7 @@ describe("Inspiration Service", () => {
       expect(mockedGetCategoryPrompt).toHaveBeenCalledWith("Motivation");
 
       // Verify AI message generation
-      expect(mockedGenerateInspirationMessage).toHaveBeenCalledWith(
+      expect(mockedGenerateMessage).toHaveBeenCalledWith(
         "Geef een inspirerende, persoonlijke motivatieboodschap voor iemand die bezig is met afvallen. Varieer in thema's zoals doorzettingsvermogen, kleine successen vieren, geduld hebben, en gezondheidsvoordelen. Maak het aanmoedigend en oprecht. Houd het onder 1000 tekens en schrijf in het Nederlands.",
       );
 
@@ -67,7 +66,7 @@ describe("Inspiration Service", () => {
       mockedGetCategoryPrompt.mockReturnValue(
         "Stel een persoonlijke, aanmoedigende check-in vraag over de voortgang van het afvallen. Varieer in thema's zoals voeding, beweging, mentale gezondheid, uitdagingen, of kleine overwinningen. Maak het een open vraag die aanzet tot reflectie. Houd het onder 1000 tekens en schrijf in het Nederlands.",
       );
-      mockedGenerateInspirationMessage.mockResolvedValue(
+      mockedGenerateMessage.mockResolvedValue(
         "How has your progress been this week?",
       );
       mockedSendTelegramMessage.mockResolvedValue();
@@ -81,7 +80,7 @@ describe("Inspiration Service", () => {
       expect(mockedGetCategoryPrompt).toHaveBeenCalledWith("Check-in");
 
       // Verify AI message generation
-      expect(mockedGenerateInspirationMessage).toHaveBeenCalledWith(
+      expect(mockedGenerateMessage).toHaveBeenCalledWith(
         "Stel een persoonlijke, aanmoedigende check-in vraag over de voortgang van het afvallen. Varieer in thema's zoals voeding, beweging, mentale gezondheid, uitdagingen, of kleine overwinningen. Maak het een open vraag die aanzet tot reflectie. Houd het onder 1000 tekens en schrijf in het Nederlands.",
       );
 
@@ -95,9 +94,7 @@ describe("Inspiration Service", () => {
       // Setup mocks
       mockedSelectRandomCategory.mockReturnValue("Motivation");
       mockedGetCategoryPrompt.mockReturnValue("Provide a motivational message");
-      mockedGenerateInspirationMessage.mockRejectedValue(
-        new Error("AI Service Error"),
-      );
+      mockedGenerateMessage.mockRejectedValue(new Error("AI Service Error"));
 
       await expect(sendDailyInspiration()).rejects.toThrow(
         "Failed to send daily inspiration: AI Service Error",
@@ -111,9 +108,7 @@ describe("Inspiration Service", () => {
       // Setup mocks
       mockedSelectRandomCategory.mockReturnValue("Motivation");
       mockedGetCategoryPrompt.mockReturnValue("Provide a motivational message");
-      mockedGenerateInspirationMessage.mockResolvedValue(
-        "You are doing great!",
-      );
+      mockedGenerateMessage.mockResolvedValue("You are doing great!");
       mockedSendTelegramMessage.mockRejectedValue(
         new Error("Telegram API Error"),
       );
@@ -130,7 +125,7 @@ describe("Inspiration Service", () => {
 
       // Mock a very long AI response
       const longMessage = "A".repeat(5000);
-      mockedGenerateInspirationMessage.mockResolvedValue(longMessage);
+      mockedGenerateMessage.mockResolvedValue(longMessage);
       mockedSendTelegramMessage.mockResolvedValue();
 
       await sendDailyInspiration();
@@ -143,9 +138,7 @@ describe("Inspiration Service", () => {
       // Setup mocks
       mockedSelectRandomCategory.mockReturnValue("Check-in");
       mockedGetCategoryPrompt.mockReturnValue("Ask a check-in question");
-      mockedGenerateInspirationMessage.mockResolvedValue(
-        "How are you feeling today?",
-      );
+      mockedGenerateMessage.mockResolvedValue("How are you feeling today?");
       mockedSendTelegramMessage.mockResolvedValue();
 
       const result = await sendDailyInspiration();

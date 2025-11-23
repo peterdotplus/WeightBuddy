@@ -1,5 +1,6 @@
 import { Telegraf, Context } from "telegraf";
 import { config } from "../config/config";
+import { handleChatMessage } from "./chatService";
 
 // Define button states and emojis
 const THREE_STATE_BUTTON_STATES = ["🔴", "🟡", "🟢"] as const;
@@ -166,6 +167,38 @@ bot.action("show_alert", async (ctx) => {
   await ctx.answerCbQuery("🚨 Alert notification displayed!", {
     show_alert: true,
   });
+});
+
+// Handle text messages (non-command chat)
+bot.on("text", async (ctx) => {
+  const message = ctx.message.text;
+  const userId = ctx.from?.id;
+
+  if (!userId) {
+    console.warn("Received text message without user ID");
+    return;
+  }
+
+  try {
+    // Handle the chat message using our chat service
+    const response = await handleChatMessage(message);
+
+    // If response is null, it means it was a slash command or empty message
+    // In that case, let the command handlers handle it
+    if (response === null) {
+      return;
+    }
+
+    // Send the AI-generated response back to the user
+    await ctx.reply(response);
+  } catch (error) {
+    console.error("Error handling chat message:", error);
+
+    // Send a friendly error message to the user
+    await ctx.reply(
+      "Sorry, I'm having trouble processing your message right now. Please try again later.",
+    );
+  }
 });
 
 // Error handling

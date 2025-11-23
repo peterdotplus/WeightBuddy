@@ -1,9 +1,7 @@
 import axios from "axios";
 import { config } from "../config/config";
 
-export async function generateInspirationMessage(
-  prompt: string,
-): Promise<string> {
+export async function generateMessage(prompt: string): Promise<string> {
   const apiKey = config.deepseek.apiKey;
   const apiUrl = config.deepseek.apiUrl;
 
@@ -49,10 +47,8 @@ export async function generateInspirationMessage(
     return message.content;
   } catch (error) {
     if (error instanceof Error) {
-      throw new Error(
-        `Failed to generate inspiration message: ${error.message}`,
-      );
+      throw new Error(`Failed to generate message: ${error.message}`);
     }
-    throw new Error("Failed to generate inspiration message: Unknown error");
+    throw new Error("Failed to generate message: Unknown error");
   }
 }

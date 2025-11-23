@@ -1,8 +1,9 @@
-// Mock Telegraf first
+// Mock Telegraf first - this needs to be at the top before any imports
 jest.mock("telegraf", () => {
   const mockBot = {
     command: jest.fn(),
     action: jest.fn(),
+    on: jest.fn(),
     catch: jest.fn(),
     launch: jest.fn(),
     stop: jest.fn(),
@@ -10,6 +11,7 @@ jest.mock("telegraf", () => {
       setWebhook: jest.fn(),
       getWebhookInfo: jest.fn(),
       deleteWebhook: jest.fn(),
+      getMe: jest.fn(),
     },
   };
   return {
@@ -36,12 +38,14 @@ describe("Telegram Bot Service", () => {
     // Reset the mock bot instance
     mockBot.command.mockClear();
     mockBot.action.mockClear();
+    mockBot.on.mockClear();
     mockBot.catch.mockClear();
     mockBot.launch.mockClear();
     mockBot.stop.mockClear();
     mockBot.telegram.setWebhook.mockClear();
     mockBot.telegram.getWebhookInfo.mockClear();
     mockBot.telegram.deleteWebhook.mockClear();
+    mockBot.telegram.getMe.mockClear();
   });
 
   afterEach(() => {
@@ -104,6 +108,10 @@ describe("Telegram Bot Service", () => {
         "show_toast",
         expect.any(Function),
       );
+    });
+
+    it("should register text message handler", () => {
+      expect(mockBot.on).toHaveBeenCalledWith("text", expect.any(Function));
     });
 
     it("should register error handler", () => {

@@ -32,7 +32,9 @@ describe("Category Service", () => {
       expect(prompt).toBeDefined();
       expect(typeof prompt).toBe("string");
       expect(prompt.length).toBeGreaterThan(0);
-      expect(prompt).toContain("motivatieboodschap");
+      expect(prompt).toContain("You are a supportive weight loss coach");
+      expect(prompt).toContain("Keep your response under 1000 characters");
+      expect(prompt).toContain("write in Dutch");
     });
 
     it('should return a check-in prompt when given "Check-in" category', () => {
@@ -41,7 +43,9 @@ describe("Category Service", () => {
       expect(prompt).toBeDefined();
       expect(typeof prompt).toBe("string");
       expect(prompt.length).toBeGreaterThan(0);
-      expect(prompt).toContain("check-in vraag");
+      expect(prompt).toContain("You are a caring weight loss coach");
+      expect(prompt).toContain("Keep your response under 1000 characters");
+      expect(prompt).toContain("write in Dutch");
     });
 
     it("should throw an error for invalid category", () => {
