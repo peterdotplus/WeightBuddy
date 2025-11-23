@@ -30,7 +30,7 @@ describe("Chat Integration", () => {
         expect.stringContaining(userMessage),
       );
       expect(mockGenerateMessage).toHaveBeenCalledWith(
-        expect.stringContaining("Keep your response under 1000 characters"),
+        expect.stringContaining("Keep your response under 600 characters"),
       );
       expect(mockGenerateMessage).toHaveBeenCalledWith(
         expect.stringContaining("write in Dutch"),
@@ -68,9 +68,7 @@ describe("Chat Integration", () => {
 
       expect(calledPrompt).toContain("You are a supportive weight loss coach");
       expect(calledPrompt).toContain(userMessage);
-      expect(calledPrompt).toContain(
-        "Keep your response under 1000 characters",
-      );
+      expect(calledPrompt).toContain("Keep your response under 600 characters");
       expect(calledPrompt).toContain("write in Dutch");
       expect(calledPrompt).toContain("without using a greeting");
     });

@@ -73,7 +73,7 @@ describe("Chat Service", () => {
         expect.stringContaining(userMessage),
       );
       expect(mockGenerateMessage).toHaveBeenCalledWith(
-        expect.stringContaining("Keep your response under 1000 characters"),
+        expect.stringContaining("Keep your response under 600 characters"),
       );
       expect(mockGenerateMessage).toHaveBeenCalledWith(
         expect.stringContaining("write in Dutch"),
@@ -106,7 +106,7 @@ describe("Chat Service", () => {
       await handleChatMessage("Test bericht");
 
       expect(mockGenerateMessage).toHaveBeenCalledWith(
-        expect.stringContaining("Keep your response under 1000 characters"),
+        expect.stringContaining("Keep your response under 600 characters"),
       );
     });
 

@@ -3,7 +3,7 @@ import { generateMessage } from "./deepseekService";
 const CHAT_PROMPT_BASE =
   'You are a supportive weight loss coach. A user has sent you this message: "';
 const CHAT_PROMPT_SUFFIX =
-  '".\nPlease respond helpfully and supportively to their message.\nKeep your response under 1000 characters and write in Dutch without using a greeting.';
+  '".\nPlease respond helpfully and supportively to their message.\nKeep your response under 600 characters and write in Dutch without using a greeting.';
 
 /**
  * Determines if a message is a slash command
