@@ -101,3 +101,4 @@ ehthumbs.db
 Thumbs.db
 
 config.json
+data/conversation-memory.json

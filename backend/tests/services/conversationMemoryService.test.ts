@@ -22,20 +22,36 @@ describe("Conversation Memory Service", () => {
   const TEST_USER_ID = 123456789;
   const TEST_MEMORY_FILE = "/test/conversation-memory.json";
 
+  let mockFileContent: string;
+  let mockMemory: any;
+
   beforeEach(() => {
     jest.clearAllMocks();
+
+    // Reset mock file content and memory
+    mockFileContent = "{}";
+    mockMemory = {};
 
     // Mock path.join to return test file path
     mockedPath.join.mockReturnValue(TEST_MEMORY_FILE);
 
-    // Mock fs.existsSync to return false initially (file doesn't exist)
-    mockedFs.existsSync.mockReturnValue(false);
+    // Mock fs.existsSync to always return true (file exists)
+    mockedFs.existsSync.mockReturnValue(true);
 
-    // Mock fs.readFileSync to return empty object
-    mockedFs.readFileSync.mockReturnValue("{}");
+    // Mock fs.readFileSync to return current mock file content
+    mockedFs.readFileSync.mockImplementation(() => {
+      return JSON.stringify(mockMemory);
+    });
 
-    // Mock fs.writeFileSync
-    mockedFs.writeFileSync.mockImplementation(() => {});
+    // Mock fs.writeFileSync to update mock file content
+    mockedFs.writeFileSync.mockImplementation((filePath: any, data: any) => {
+      const content = typeof data === "string" ? data : data.toString();
+      mockMemory = JSON.parse(content);
+      mockFileContent = content;
+    });
+
+    // Mock fs.mkdirSync to do nothing (avoid directory creation issues)
+    mockedFs.mkdirSync.mockImplementation(() => undefined as any);
   });
 
   describe("initializeConversationMemory", () => {
@@ -49,6 +65,7 @@ describe("Conversation Memory Service", () => {
         "{}",
         "utf-8",
       );
+      expect(mockedFs.writeFileSync).toHaveBeenCalledTimes(1);
     });
 
     it("should not overwrite existing memory file", () => {
@@ -75,15 +92,13 @@ describe("Conversation Memory Service", () => {
 
     it("should maintain only last 30 messages", () => {
       // Add 31 messages
+      // Add messages one by one to ensure they accumulate
       for (let i = 1; i <= 31; i++) {
         addUserMessage(TEST_USER_ID, `Message ${i}`);
       }
 
-      const lastCall =
-        mockedFs.writeFileSync.mock.calls[
-          mockedFs.writeFileSync.mock.calls.length - 1
-        ]!;
-      const savedData = JSON.parse(lastCall[1] as string);
+      // Get the last saved data from the mock memory
+      const savedData = mockMemory;
       const userMessages = savedData[TEST_USER_ID].messages;
 
       expect(userMessages).toHaveLength(30);
@@ -128,15 +143,13 @@ describe("Conversation Memory Service", () => {
     });
 
     it("should alternate user and assistant messages correctly", () => {
-      addUserMessage(TEST_USER_ID, "User message");
+      // Add messages in sequence to ensure they accumulate
+      addUserMessage(TEST_USER_ID, "First user message");
       addAssistantMessage(TEST_USER_ID, "Assistant response");
       addUserMessage(TEST_USER_ID, "Another user message");
 
-      const lastCall =
-        mockedFs.writeFileSync.mock.calls[
-          mockedFs.writeFileSync.mock.calls.length - 1
-        ]!;
-      const savedData = JSON.parse(lastCall[1] as string);
+      // Get the last saved data from the mock memory
+      const savedData = mockMemory;
       const messages = savedData[TEST_USER_ID].messages;
 
       expect(messages).toHaveLength(3);
@@ -229,11 +242,7 @@ describe("Conversation Memory Service", () => {
 
       clearUserConversation(TEST_USER_ID);
 
-      const lastCall =
-        mockedFs.writeFileSync.mock.calls[
-          mockedFs.writeFileSync.mock.calls.length - 1
-        ]!;
-      const savedData = JSON.parse(lastCall[1] as string);
+      const savedData = mockMemory;
 
       expect(savedData[TEST_USER_ID]).toBeUndefined();
       expect(savedData[999]).toEqual(mockData[999]); // Other user's data should remain
@@ -250,37 +259,30 @@ describe("Conversation Memory Service", () => {
 
   describe("conversation history formatting", () => {
     it("should format conversation history for prompt correctly", () => {
-      const mockData = {
-        [TEST_USER_ID]: {
-          messages: [
-            {
-              role: "user",
-              content: "Hoe kan ik gemotiveerd blijven?",
-              timestamp: new Date().toISOString(),
-            },
-            {
-              role: "assistant",
-              content: "Focus op kleine doelen en vier je successen!",
-              timestamp: new Date().toISOString(),
-            },
-            {
-              role: "user",
-              content: "Ik heb moeite met consistent blijven",
-              timestamp: new Date().toISOString(),
-            },
-          ],
-          summary: "User discussing motivation and consistency in weight loss",
-          lastSummaryUpdate: new Date().toISOString(),
+      const history = [
+        {
+          role: "user" as const,
+          content: "Hoe kan ik gemotiveerd blijven?",
+          timestamp: new Date().toISOString(),
         },
-      };
-      mockedFs.readFileSync.mockReturnValue(JSON.stringify(mockData));
+        {
+          role: "assistant" as const,
+          content: "Focus op kleine doelen en vier je successen!",
+          timestamp: new Date().toISOString(),
+        },
+        {
+          role: "user" as const,
+          content: "Ik heb moeite met consistent blijven",
+          timestamp: new Date().toISOString(),
+        },
+      ];
+      const summary =
+        "User discussing motivation and consistency in weight loss";
 
-      const history = getUserConversationHistory(TEST_USER_ID);
-      const formattedHistory = history
-        .map(
-          (msg) => `${msg.role === "user" ? "User" : "Coach"}: ${msg.content}`,
-        )
-        .join("\n");
+      const formattedHistory = formatConversationHistoryForPrompt(
+        history,
+        summary,
+      );
 
       expect(formattedHistory).toContain(
         "Conversation Summary: User discussing motivation and consistency in weight loss",
@@ -307,6 +309,10 @@ describe("Conversation Memory Service", () => {
           },
         };
         mockedFs.readFileSync.mockReturnValue(JSON.stringify(mockData));
+        setConversationSummary(
+          TEST_USER_ID,
+          "User lost 5 kg and is focusing on exercise",
+        );
 
         const summary = getConversationSummary(TEST_USER_ID);
 

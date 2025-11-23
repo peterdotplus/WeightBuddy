@@ -107,6 +107,11 @@ function addMessage(
     };
   }
 
+  // Ensure messages array exists
+  if (!memory[userId].messages) {
+    memory[userId].messages = [];
+  }
+
   const message: ConversationMessage = {
     role,
     content,
@@ -221,6 +226,11 @@ export function updateConversationSummary(
   userConversation: UserConversation,
 ): void {
   // This is a basic implementation - in production, you might want to use AI to generate better summaries
+  // Ensure messages array exists
+  if (!userConversation.messages) {
+    userConversation.messages = [];
+  }
+
   const userMessages = userConversation.messages.filter(
     (msg) => msg.role === "user",
   );
@@ -272,7 +282,9 @@ export function setConversationSummary(userId: number, summary: string): void {
 function shouldUpdateConversationSummary(
   userConversation: UserConversation,
 ): boolean {
-  if (userConversation.messages.length === 0) return false;
+  // Ensure messages array exists
+  if (!userConversation.messages || userConversation.messages.length === 0)
+    return false;
 
   const lastUpdate = new Date(userConversation.lastSummaryUpdate);
   const now = new Date();
